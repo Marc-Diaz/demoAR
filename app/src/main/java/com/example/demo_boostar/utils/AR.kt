@@ -29,7 +29,7 @@ import io.github.sceneview.node.ModelNode
 import java.io.ByteArrayOutputStream
 import java.nio.ByteOrder
 
-private const val kModelFile = "models/prueba_cloth_Jordi.glb"
+
 /*
  /$$   /$$ /$$   /$$ /$$     /$$ /$$$$$$$$
 | $$  | $$| $$  | $$|  $$   /$$/| $$_____/
@@ -84,11 +84,12 @@ fun createAnchorNode(
     engine: Engine,
     modelLoader: ModelLoader,
     materialLoader: MaterialLoader,
-    anchor: Anchor
+    anchor: Anchor,
+    model: String
 ): AnchorNode {
     val anchorNode = AnchorNode(engine = engine, anchor = anchor)
     val modelNode = ModelNode(
-        modelInstance = modelLoader.createModelInstance(kModelFile),
+        modelInstance = modelLoader.createModelInstance("models/$model"),
         // Scale to fit in a 0.5 meters cube
         scaleToUnits = 0.5f
     ).apply {

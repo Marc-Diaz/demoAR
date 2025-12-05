@@ -113,76 +113,59 @@ fun PantallaAR(poseViewModel: PoseViewModel) {
                 }
 
                 poseViewModel.detectImage(frame, rotationDegrees)
+
+                val filteredLandmarks = poseLandmarks?.filterIndexed { i, _ -> i == 11 || i == 12 || i == 23 || i == 24 }
+                val coordenadas = mutableListOf<Coordenadas>()
+                filteredLandmarks?.takeIf { it.size == 4 }?.forEach { landmark ->
+
+                    landmarkToAnchorHitTest(
+                        landmark = landmark,
+                        frame = frame,
+                        surfaceWidth = view.viewport.width,
+                        surfaceHeight = view.viewport.height,
+                        )?.let { coordenada ->
+                            Log.d("PantallaAR HitTest", "$coordenada")
+                        coordenadas.add(coordenada)
+                                    }
+                    depthImage?.let {
+                        /*
+                        landmarkToWorldPos(landmark, frame, depthImage).let { coordenada ->
+                        Log.d("PantallaAR ImagenProfundidad", "$coordenada")
+                        coordenadas.add(coordenada)*/
+                    }
+                    Log.d("PantallaAR", "landmarks=$filteredLandmarks")
+                    Log.d("PantallaAR", "anchors=$coordenadas")
+                    coordenadas.takeIf { it.size == 4 }?.let { a ->
+                        // Calcular centro de los 4 landmarks
+                        val centralX = (a[0].x + a[1].x + a[2].x + a[3].x) / 4f
+                        val centralY = (a[0].y + a[1].y + a[2].y + a[3].y) / 4f
+                        val centralZ = (a[0].z + a[1].z + a[2].z + a[3].z) / 4f
+
+                        val pose = Pose(
+                            floatArrayOf(centralX, centralY, centralZ),
+                            floatArrayOf(0.7071f, 0f, 0f, 0.7071f)
+                        )
+                        Log.d("PantallaAR", "$pose")
+                        try {
+                            if (torsoNode == null) {
+                                // Crear AnchorNode la primera vez
+                                val anchor = session.createAnchor(pose)
+                                torsoNode = createAnchorNode(engine, modelLoader, materialLoader, anchor, "prueba_cloth_Jordi.glb")
+                                torsoNode!!.setScale(4f)
+                                landmarkAnchors.add(0, torsoNode!!)
+
+                                Log.d("PantallaAR UNICO", "Nodo Colocado")
+                            } else {
+                                // Actualizar posición del Node existente
+                                torsoNode!!.worldPosition = Float3(centralX, centralY, centralZ)
+                                torsoNode!!.worldRotation = Float3(0f, 0f, 0f)
+                                Log.d("PantallaAR UNICO", "Reposicionado")
+                            }
+                        } catch (e: Exception) {
+                            Log.d("ERROR PantallaAR", "$e")
+                        }
+                    }
                 /*
-                                val filteredLandmarks =
-                                    poseLandmarks?.filterIndexed { i, _ -> i == 11 || i == 12 || i == 23 || i == 24 }
-                                val coordenadas = mutableListOf<Coordenadas>()
-                                filteredLandmarks?.takeIf { it.size == 4 }?.forEach { landmark ->
-
-                                    landmarkToAnchorHitTest(
-                                        landmark = landmark,
-                                        frame = frame,
-                                        surfaceWidth = view.viewport.width,
-                                        surfaceHeight = view.viewport.height,
-                                    )?.let { coordenada ->
-                                        Log.d("PantallaAR HitTest", "$coordenada")
-                                        coordenadas.add(coordenada)
-                                    }
-                                    depthImage?.let {
-                                        /*
-                                        landmarkToWorldPos(landmark, frame, depthImage).let { coordenada ->
-                                            Log.d("PantallaAR ImagenProfundidad", "$coordenada")
-                                            coordenadas.add(coordenada)
-                                        }
-                                         *
-                                        landmarkToWorldPos(landmark = landmark,
-                                            frame = frame,
-                                            surfaceWidth = view.viewport.width,
-                                            surfaceHeight = view.viewport.height,
-                                            depthImage = depthImage)?.let { coordenada ->
-                                                Log.d("PantallaAR Depth", "$coordenada")
-                                                coordenadas.add(coordenada)
-                                        }
-                                        */
-                                    }
-
-
-                                }
-                                Log.d("PantallaAR", "landmarks=$filteredLandmarks")
-                                Log.d("PantallaAR", "anchors=$coordenadas")
-                                coordenadas.takeIf { it.size == 4 }?.let { a ->
-                                    // Calcular centro de los 4 landmarks
-                                    val centralX = (a[0].x + a[1].x + a[2].x + a[3].x) / 4f
-                                    val centralY = (a[0].y + a[1].y + a[2].y + a[3].y) / 4f
-                                    val centralZ = (a[0].z + a[1].z + a[2].z + a[3].z) / 4f
-
-                                    val pose = Pose(
-                                        floatArrayOf(centralX, centralY, centralZ),
-                                        floatArrayOf(0.7071f, 0f, 0f, 0.7071f)
-                                    )
-                                    Log.d("PantallaAR", "$pose")
-                                    try {
-                                        if (torsoNode == null) {
-                                            // Crear AnchorNode la primera vez
-                                            val anchor = session.createAnchor(pose)
-                                            torsoNode =
-                                                createAnchorNode(engine, modelLoader, materialLoader, anchor)
-                                            landmarkAnchors.add(0, torsoNode!!)
-
-                                            Log.d("PantallaAR UNICO", "Nodo Colocado")
-                                        } else {
-                                            // Actualizar posición del Node existente
-                                            torsoNode!!.worldPosition = Float3(centralX, centralY, centralZ)
-                                            torsoNode!!.worldRotation = Float3(0f, 0f, 0f)
-                                            Log.d("PantallaAR UNICO", "Reposicionado")
-                                        }
-                                    } catch (e: Exception) {
-                                        Log.d("ERROR PantallaAR", "$e")
-                                    }
-
-                                }
-                */
-
                 poseLandmarks?.forEachIndexed { i, landmark ->
                     depthImage?.let {
                         val coordenada = landmarkToWorldPos(
@@ -222,7 +205,7 @@ fun PantallaAR(poseViewModel: PoseViewModel) {
                                 Log.d("ERROR PantallaAR", "$e")
                             }
                         }
-                    }
+                    }*/
                 }
 
             }
