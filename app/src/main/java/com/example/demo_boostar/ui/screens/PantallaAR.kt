@@ -123,10 +123,10 @@ fun PantallaAR(poseViewModel: PoseViewModel) {
                         frame = frame,
                         surfaceWidth = view.viewport.width,
                         surfaceHeight = view.viewport.height,
-                        )?.let { coordenada ->
-                            Log.d("PantallaAR HitTest", "$coordenada")
+                    )?.let { coordenada ->
+                        Log.d("PantallaAR HitTest", "$coordenada")
                         coordenadas.add(coordenada)
-                                    }
+                    }
                     depthImage?.let {
                         /*
                         landmarkToWorldPos(landmark, frame, depthImage).let { coordenada ->
@@ -165,47 +165,47 @@ fun PantallaAR(poseViewModel: PoseViewModel) {
                             Log.d("ERROR PantallaAR", "$e")
                         }
                     }
-                /*
-                poseLandmarks?.forEachIndexed { i, landmark ->
-                    depthImage?.let {
-                        val coordenada = landmarkToWorldPos(
-                            landmark = landmark,
-                            frame = frame,
-                            depthImage = depthImage,
-                        )
-                        coordenada?.let {
-                            Log.d("ARScene", "$coordenada")
-                            val pose = Pose(
-                                floatArrayOf(coordenada.x, coordenada.y, coordenada.z),
-                                floatArrayOf(0.7071f, 0f, 0f, 0.7071f)
+                    /*
+                    poseLandmarks?.forEachIndexed { i, landmark ->
+                        depthImage?.let {
+                            val coordenada = landmarkToWorldPos(
+                                landmark = landmark,
+                                frame = frame,
+                                depthImage = depthImage,
                             )
-                            Log.d("PantallaAR", "$pose")
-                            try {
-                                if (landmarkAnchors.size <= i) {
-                                    // Crear AnchorNode la primera vez
-                                    val anchor = session.createAnchor(pose)
-                                    landmarkAnchors.add(
-                                        i,
-                                        createAnchorNode(
-                                            engine,
-                                            modelLoader,
-                                            materialLoader,
-                                            anchor
+                            coordenada?.let {
+                                Log.d("ARScene", "$coordenada")
+                                val pose = Pose(
+                                    floatArrayOf(coordenada.x, coordenada.y, coordenada.z),
+                                    floatArrayOf(0.7071f, 0f, 0f, 0.7071f)
+                                )
+                                Log.d("PantallaAR", "$pose")
+                                try {
+                                    if (landmarkAnchors.size <= i) {
+                                        // Crear AnchorNode la primera vez
+                                        val anchor = session.createAnchor(pose)
+                                        landmarkAnchors.add(
+                                            i,
+                                            createAnchorNode(
+                                                engine,
+                                                modelLoader,
+                                                materialLoader,
+                                                anchor
+                                            )
                                         )
-                                    )
 
-                                    Log.d("PantallaAR UNICO", "Nodo Colocado")
-                                } else {
-                                    landmarkAnchors[i].worldPosition =
-                                        Float3(coordenada.x, coordenada.y, coordenada.z)
-                                    landmarkAnchors[i].worldRotation = Float3(0f, 0f, 0f)
-                                    Log.d("PantallaAR UNICO", "Reposicionado")
+                                        Log.d("PantallaAR UNICO", "Nodo Colocado")
+                                    } else {
+                                        landmarkAnchors[i].worldPosition =
+                                            Float3(coordenada.x, coordenada.y, coordenada.z)
+                                        landmarkAnchors[i].worldRotation = Float3(0f, 0f, 0f)
+                                        Log.d("PantallaAR UNICO", "Reposicionado")
+                                    }
+                                } catch (e: Exception) {
+                                    Log.d("ERROR PantallaAR", "$e")
                                 }
-                            } catch (e: Exception) {
-                                Log.d("ERROR PantallaAR", "$e")
                             }
-                        }
-                    }*/
+                        }*/
                 }
 
             }
